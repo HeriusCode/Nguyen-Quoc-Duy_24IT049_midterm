@@ -1,0 +1,21 @@
+# Object files
+*.o
+
+# Executable
+myls
+
+# Core dump
+core
+core.*
+
+# Temporary files
+*~
+*.swp
+*.swo
+
+# Editor temporary files
+.#*
+
+# OS generated files
+.DS_Store
+Thumbs.db
