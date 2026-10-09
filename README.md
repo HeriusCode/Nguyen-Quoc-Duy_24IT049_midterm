@@ -1,10 +1,11 @@
 Midterm Project
 Github: https://github.com/HeriusCode/Nguyen-Quoc-Duy_24IT049_midterm.git
 1.	Kiểm tra chạy chương trình cơ bản
+cd ~/midterm_ls
 ./myls
 Kiểm tra chương trình có thể khởi động và liệt kê nội dung thư mục hiện tại hay không. Kết quả cho thấy chương trình thực thi bình thường và hiển thị danh sách các file, thư mục.
  
- 2.	Kiểm tra -a
+ 3.	Kiểm tra -a
 ./myls -a
 Chương trình hiển thị cả file ẩn và các entry . và .. .
 
@@ -101,6 +102,10 @@ Một số option sẽ override nhau tùy theo option xuất hiện cuối cùng
 ./myls -qw
  
 ./myls -wq
+
+-R và -d
+./myls -Rd testdir 
+./myls -dR testdir
  
 	Các nhóm option có quan hệ override được kiểm tra bằng cách thay đổi thứ tự xuất hiện của option trong command line. Kết quả được đối chiếu để xác nhận option xuất hiện sau cùng có hiệu lực.
 
@@ -119,5 +124,23 @@ Symbolic link là một loại file đặc biệt. Với -F, symbolic link phả
 24.	Kiểm tra long format
 ./myls -l test2.txt
 Long format được kiểm tra bằng option -l. Chương trình phải lấy thông tin metadata từ filesystem và hiển thị đầy đủ quyền truy cập, số hard link, owner, group, kích thước, thời gian và tên file.
+
+25.	Kiểm tra xử lý quyền đặc biệt
+chmod 4755 permtest
+./myls -l permtest
+chmod 2755 permtest
+./myls -l permtest
+chmod 1777 permtest
+./myls -l permtest
+Kiểm tra khả năng hiển thị các quyền đặc biệt setuid, setgid và sticky bit trong long format.
  
+26.	Kiểm tra symbolic link trong long format
+./myls -l link.txt
+Kiểm tra khả năng hiển thị thông tin chi tiết của symbolic link và đường dẫn đích của liên kết.
+ 
+27.	Kiểm tra xử lý lỗi
+./myls no_such_file.txt 
+echo $?
+Kiểm tra khả năng phát hiện lỗi khi operand không tồn tại và mã thoát của chương trình.
+
 
