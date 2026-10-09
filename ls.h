@@ -3,6 +3,6 @@
 
 #include "options.h"
 
-void ls_path(const char *path, const Options *options);
+int ls_path(const char *path, const Options *options);
 
 #endif
