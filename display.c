@@ -34,15 +34,24 @@ print_mode(mode_t mode)
 
     printf("%c", (mode & S_IRUSR) ? 'r' : '-');
     printf("%c", (mode & S_IWUSR) ? 'w' : '-');
-    printf("%c", (mode & S_IXUSR) ? 'x' : '-');
+    printf("%c", (mode & S_ISUID) ?
+        ((mode & S_IXUSR) ? 's' : 'S') :
+        ((mode & S_IXUSR) ? 'x' : '-'));
 
     printf("%c", (mode & S_IRGRP) ? 'r' : '-');
     printf("%c", (mode & S_IWGRP) ? 'w' : '-');
-    printf("%c", (mode & S_IXGRP) ? 'x' : '-');
+printf("%c",
+        (mode & S_ISGID) ?
+        ((mode & S_IXGRP) ? 's' : 'S') :
+        ((mode & S_IXGRP) ? 'x' : '-'));
 
-    printf("%c", (mode & S_IROTH) ? 'r' : '-');
+
+
+ printf("%c", (mode & S_IROTH) ? 'r' : '-');
     printf("%c", (mode & S_IWOTH) ? 'w' : '-');
-    printf("%c", (mode & S_IXOTH) ? 'x' : '-');
+    printf("%c", (mode & S_ISVTX) ?
+        ((mode & S_IXOTH) ? 't' : 'T') :
+        ((mode & S_IXOTH) ? 'x' : '-'));
 }
 
 static void
@@ -120,7 +129,8 @@ print_name(const char *name, const Options *options)
 
     if (options->name_mode == NAME_QUESTION) {
         use_question = 1;
-    } else if (options->name_mode == NAME_RAW) {
+
+  } else if (options->name_mode == NAME_RAW) {
         use_question = 0;
     } else {
         use_question = isatty(STDOUT_FILENO);
@@ -149,6 +159,8 @@ display_long(const FileInfo *info, const Options *options)
     struct passwd *pw;
     struct group *gr;
     char timebuf[64];
+    char linkbuf[1024];
+    ssize_t linklen;
     struct tm *tm_info;
     time_t file_time;
 
@@ -192,6 +204,15 @@ display_long(const FileInfo *info, const Options *options)
 
     printf(" ");
     print_name(info->path, options);
+    if (S_ISLNK(info->st.st_mode)) {
+        linklen = readlink(info->path, linkbuf,
+            sizeof(linkbuf) - 1);
+
+        if (linklen >= 0) {
+            linkbuf[linklen] = '\0';
+            printf(" -> %s", linkbuf);
+        }
+    }
 
     if (options->classify)
         print_classification(info);
