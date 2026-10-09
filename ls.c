@@ -132,26 +132,94 @@ list_directory(const char *path, const Options *options)
         }
     }
 
-    free(list.items);
-}
 
-void
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+free(list.items);
+}
+int
 ls_path(const char *path, const Options *options)
 {
     struct stat st;
 
     if (lstat(path, &st) == -1) {
         perror(path);
-        return;
+        return -1;
     }
 
     if (options->directory_only) {
         list_file(path, options);
-        return;
+        return 0;
     }
 
     if (S_ISDIR(st.st_mode))
         list_directory(path, options);
     else
         list_file(path, options);
+
+    return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

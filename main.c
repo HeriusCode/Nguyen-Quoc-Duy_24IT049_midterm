@@ -1,6 +1,6 @@
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/stat.h>
 
 #include "options.h"
@@ -14,18 +14,20 @@ load_operands(int argc, char **argv, int first_operand,
     FileList *files, FileList *directories)
 {
     int i;
+    int had_error = 0;
 
     files->items = NULL;
     files->count = 0;
-
     directories->items = NULL;
     directories->count = 0;
 
     for (i = first_operand; i < argc; i++) {
         FileInfo info;
 
-        if (fileinfo_load(argv[i], &info) != 0)
+        if (fileinfo_load(argv[i], &info) != 0) {
+            had_error = 1;
             continue;
+        }
 
         if (S_ISDIR(info.st.st_mode)) {
             FileInfo *new_items;
@@ -62,7 +64,7 @@ load_operands(int argc, char **argv, int first_operand,
         }
     }
 
-    return 0;
+    return had_error;
 }
 
 static void
@@ -81,7 +83,7 @@ display_operands(FileList *files, FileList *directories,
         if (files->count > 0 || directories->count > 1)
             printf("\n%s:\n", directories->items[i].path);
 
-        ls_path(directories->items[i].path, options);
+        (void)ls_path(directories->items[i].path, options);
     }
 }
 
@@ -90,6 +92,7 @@ main(int argc, char **argv)
 {
     Options options;
     int first_operand;
+    int operand_status;
     FileList files;
     FileList directories;
 
@@ -100,13 +103,13 @@ main(int argc, char **argv)
     if (first_operand < 0)
         return 1;
 
-    if (first_operand >= argc) {
-        ls_path(".", &options);
-        return 0;
-    }
+    if (first_operand >= argc)
+        return ls_path(".", &options) == 0 ? 0 : 1;
 
-    if (load_operands(argc, argv, first_operand,
-        &files, &directories) != 0)
+    operand_status = load_operands(argc, argv, first_operand,
+        &files, &directories);
+
+    if (operand_status < 0)
         return 1;
 
     display_operands(&files, &directories, &options);
@@ -114,6 +117,6 @@ main(int argc, char **argv)
     free(files.items);
     free(directories.items);
 
-    return 0;
+    return operand_status == 0 ? 0 : 1;
 }
 
